@@ -8,19 +8,26 @@ Follow these steps to prepare your environment and codebase:
 
 ```bash
 # Clone the repository
-git clone [https://github.com/heeyoon-DAlab/DeepGenerativeModel_FaceGenerationChallenge](https://github.com/heeyoon-DAlab/DeepGenerativeModel_FaceGenerationChallenge)
+git clone https://github.com/heeyoon-DAlab/DeepGenerativeModel_FaceGenerationChallenge
 cd DeepGenerativeModel_FaceGenerationChallenge
 
 # Setup environment
 conda env create -f environment.yml
 conda activate stylegan3
 
-# Prepare StyleGAN3 source
-git clone [https://github.com/NVlabs/stylegan3](https://github.com/NVlabs/stylegan3)
-( cd stylegan3 && git apply ../patches/conditional_resume.patch )
-
 # Create directory for model weights
 mkdir -p models
+
+```text
+DeepGenerativeModel_FaceGenerationChallenge/
+├── models/
+│   ├── exp1_network-snapshot-000960.pkl
+│   ├── exp2_network-snapshot-000760.pkl
+│   └── exp3_network-snapshot-001000.pkl
+├── src/
+├── stylegan3/
+└── ...
+```
 ```
 ---
 
