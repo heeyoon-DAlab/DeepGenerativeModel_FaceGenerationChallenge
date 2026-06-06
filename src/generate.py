@@ -1,16 +1,4 @@
 #!/usr/bin/env python3
-"""
-Generate images from a trained snapshot with fixed seeds.
-
-Works for both the unconditional runs (exp1/exp2) and the conditional one
-(exp3). z is drawn per seed the same way stylegan3's gen_images.py does it, so a
-given snapshot and seed range always produce the same images. For a conditional
-model the per-image bucket label is sampled from RandomState(--label-seed) using
---proportions, so the (z, label) pairs are fixed too.
-
-Needs the stylegan3 code importable, e.g. run with PYTHONPATH=stylegan3.
-Writes img_0000.png ... (RGB), no translate/rotate.
-"""
 import argparse, os, re
 import numpy as np
 import torch
