@@ -38,6 +38,9 @@ DeepGenerativeModel_FaceGenerationChallenge/
 Download the network-snapshot-XXXXXX.pkl files from the GitHub Release page and place them into the models/ directory.
 
 ```bash
+# Add the StyleGAN3 library path
+export PYTHONPATH=$PYTHONPATH:$(pwd)/stylegan3
+
 python src/generate.py --network models/exp1_network-snapshot-000960.pkl \
   --outdir outputs/exp1/images --seeds 0-999 --trunc 1.0
 python src/make_submission.py --images outputs/exp1/images --out submission_exp1.zip
