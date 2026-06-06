@@ -18,6 +18,8 @@ conda activate stylegan3
 # Create directory for model weights
 mkdir -p models
 
+# Download Model Weights from GitHub Release page and place them as shown below
+
 DeepGenerativeModel_FaceGenerationChallenge/
 ├── models/
 │   ├── exp1_network-snapshot-000960.pkl
