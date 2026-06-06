@@ -15,6 +15,9 @@ cd DeepGenerativeModel_FaceGenerationChallenge
 conda env create -f environment.yml
 conda activate stylegan3
 
+# Install torch & torchvision
+pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
+
 # Create directory for model weights
 mkdir -p models
 
