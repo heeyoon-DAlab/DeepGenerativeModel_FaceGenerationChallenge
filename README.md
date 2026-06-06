@@ -22,7 +22,6 @@ pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url http
 mkdir -p models
 
 # Download Model Weights from GitHub Release page and place them as shown below
-
 DeepGenerativeModel_FaceGenerationChallenge/
 ├── models/
 │   ├── exp1_network-snapshot-000960.pkl
