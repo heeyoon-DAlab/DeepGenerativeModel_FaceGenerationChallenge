@@ -1,46 +1,111 @@
 \documentclass{article}
-% Drop this file into the ICLR 2024 template folder (replace its main.tex) and
-% compile on Overleaf or with pdflatex+bibtex. Requires the ICLR style files:
-%   iclr2024_conference.sty, iclr2024_conference.bst, fancyhdr.sty, math_commands.tex
-\usepackage{iclr2024_conference,times}
-\input{math_commands.tex}
 
-\usepackage{hyperref}
-\usepackage{url}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{amsmath}
-\usepackage{xcolor}
-
-\title{Condition, Don't Filter: \\ Quality-Conditioned Fine-Tuning of StyleGAN3 \\ for CelebV-HQ Face Generation}
-
-\author{Heeyoon Lee \\
-Ulsan National Institute of Science and Technology (UNIST) \\
-\texttt{rlagkdus705@unist.ac.kr} \\ % replace with your own address if needed
+\usepackage{filecontents}
+\begin{filecontents}{references.bib}
+@inproceedings{binkowski2018kid,
+  title={Demystifying {MMD} {GANs}},
+  author={Bi{\'n}kowski, Miko{\l}aj and Sutherland, Dougal J and Arbel, Michael and Gretton, Arthur},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2018}
 }
 
-\newcommand{\fix}{\marginpar{FIX}}
-\newcommand{\new}{\marginpar{NEW}}
+@inproceedings{heusel2017fid,
+  title={{GANs} trained by a two time-scale update rule converge to a local Nash equilibrium},
+  author={Heusel, Martin and Ramsauer, Hubert and Unterthiner, Thomas and Nessler, Bernhard and Hochreiter, Sepp},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2017}
+}
 
-\iclrfinalcopy
+@inproceedings{karras2020ada,
+  title={Training generative adversarial networks with limited data},
+  author={Karras, Tero and Aittala, Miika and Hellsten, Janne and Laine, Samuli and Lehtinen, Jaakko and Aila, Timo},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2020}
+}
+
+@inproceedings{karras2019stylegan,
+  title={A style-based generator architecture for generative adversarial networks},
+  author={Karras, Tero and Laine, Samuli and Aila, Timo},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+  pages={4401--4410},
+  year={2019}
+}
+
+@inproceedings{karras2020stylegan2,
+  title={Analyzing and improving the image quality of stylegan},
+  author={Karras, Tero and Laine, Samuli and Aittala, Miika and Hellsten, Janne and Lehtinen, Jaakko and Aila, Timo},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+  pages={8110--8119},
+  year={2020}
+}
+
+@inproceedings{karras2021alias,
+  title={Alias-free generative adversarial networks},
+  author={Karras, Tero and Aittala, Miika and Laine, Samuli and H{\"a}rk{\"o}nen, Erik and Hellsten, Janne and Lehtinen, Jaakko and Aila, Timo},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2021}
+}
+
+@inproceedings{kim2023toppr,
+  title={{TOP\&R}: Robust support estimation approach for evaluating fidelity and diversity in generative models},
+  author={Kim, Pum Jun and Jang, Yoojin and Kim, Jisu and Yoo, Jaejun},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2023}
+}
+
+@inproceedings{salimans2016is,
+  title={Improved techniques for training {GANs}},
+  author={Salimans, Tim and Goodfellow, Ian and Zaremba, Wojciech and Cheung, Vicki and Radford, Alec and Chen, Xi},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2016}
+}
+
+@inproceedings{zhu2022celebvhq,
+  title={{CelebV-HQ}: A large-scale video facial attributes dataset},
+  author={Zhu, Hao and Wu, Wayne and Zhu, Intao and Jiang, Liming and Tang, SiIi and Zhang, Li and Liu, ZiIi and Loy, Chen Change},
+  booktitle={European Conference on Computer Vision (ECCV)},
+  year={2022}
+}
+\end{filecontents}
+
+\usepackage[preprint]{neurips_2022}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{natbib}
+
+\title{A Study of Quality-Aware Fine-Tuning for CelebV-HQ Face Generation}
+
+\author{%
+  Heeyoon Lee \\
+  Ulsan National Institute of Science and Technology (UNIST) \\
+  \texttt{heeyoonrobot@unist.ac.kr} \\
+}
 
 \begin{document}
+
 \maketitle
 
 \begin{abstract}
-We fine-tune an FFHQ-U pretrained \textbf{StyleGAN3-R} on frames from CelebV-HQ
-and study how the \emph{quality} of training frames (brightness, sharpness)
-should be handled. We compare three regimes that share an identical model,
+I fine-tune an FFHQ-U pretrained StyleGAN3-R on frames from CelebV-HQ and study how the quality of training frames (brightness, sharpness)
+should be handled. I compare three regimes that share an identical model,
 optimizer, seed, and training length, differing only in how low-quality frames
-are treated: (i) using the \textbf{full} set of frames, (ii) \textbf{filtering}
-out dark/blurry frames, and (iii) keeping every frame but \textbf{conditioning}
+are treated: (i) using the full set of frames, (ii) filtering
+out dark/blurry frames, and (iii) keeping every frame but conditioning
 the model on a brightness$\times$sharpness bucket label. Evaluated on the
-challenge's four metrics (FID, IS, KID, TopP\&R) against the $32{,}550$-image
-CelebV-HQ reference, filtering raises Inception Score but degrades all three
+challenge's four metrics (FID, IS, KID, TOPPR) against the CelebV-HQ reference, filtering raises Inception Score but degrades all three
 distribution-matching metrics, because the reference set is itself ``messy'' and
 discarding modes pushes the generated distribution away from it. Conditioning,
-in contrast, matches the full-data baseline on FID and TopP\&R while
-\emph{improving} KID and IS, and additionally exposes a generation-time knob
+in contrast, matches the full-data baseline on FID and TOPPR while
+improving KID and IS, and additionally exposes a generation-time control variable
 (the bucket sampling proportions) that the baselines lack. All randomness is
 seeded and the full pipeline is released for exact reproduction.
 \end{abstract}
@@ -50,82 +115,94 @@ The task is to generate $1{,}000$ face images that match the CelebV-HQ
 distribution as measured by four metrics---Fr\'echet Inception Distance (FID;
 \citealp{heusel2017fid}), Inception Score (IS; \citealp{salimans2016is}), Kernel
 Inception Distance (KID; \citealp{binkowski2018kid}), and Topological Precision
-and Recall (TopP\&R; \citealp{kim2023toppr})---averaged into a single rank. We
+and Recall (TOPPR; \citealp{kim2023toppr})---averaged into a single rank. I
 adopt the simplest competitive recipe: fine-tune an FFHQ-U pretrained
 StyleGAN3-R generator \citep{karras2021alias} on CelebV-HQ frames
 \citep{zhu2022celebvhq}, with no change to the architecture, loss, or training
 algorithm.
 
-Rather than chase architectural novelty, we focus on a single, practical
+Rather than chase architectural novelty, I focus on a single, practical
 question that arises directly from the data: the extracted video frames vary
-widely in \emph{quality}---many are dark or motion-blurred. A natural impulse is
-to clean the training set by discarding such frames. We show this impulse is
+widely in quality---many are dark or motion-blurred. A natural impulse is
+to clean the training set by discarding such frames. I show this impulse is
 counterproductive under the challenge's metrics, and that the same quality
-information is better used as a \emph{conditioning signal} than as a filter.
+information is better used as a conditioning signal than as a filter.
 
-Our contributions are: (1) a controlled three-way comparison (full / filtered /
+My contributions are: (1) a controlled three-way comparison (full / filtered /
 conditional) in which only the data-handling strategy varies; (2) evidence that
 filtering trades a single reference-free metric (IS) for losses on all three
 distribution-matching metrics; (3) a quality-conditioned model that keeps the
 full distribution while improving IS and KID over the plain baseline, with a
-controllable generation-time proportion knob; and (4) a fully seeded, publicly
+controllable generation-time proportion control variable; and (4) a fully seeded, publicly
 released pipeline built for exact reproduction.
 
+\section{Related Work}
+
+\paragraph{Evolution of StyleGAN architectures.}
+The StyleGAN family has established the standard for high-fidelity face generation through a series of architectural refinements. The original StyleGAN \citep{karras2019stylegan} introduced a style-based generator architecture in which latent vectors are first transformed by a mapping network and subsequently injected into the synthesis network through Adaptive Instance Normalization (AdaIN). This design significantly improved controllability and image quality, but also introduced characteristic droplet-like artifacts due to the destruction of spatial feature statistics.
+
+StyleGAN2 \citep{karras2020stylegan2} addressed these issues by replacing AdaIN with Weight demodulation and introducing skip-generator connections together with path length regularization. These modifications substantially improved image fidelity and latent space smoothness. Nevertheless, StyleGAN2 still exhibited ``texture sticking,'' where features like hair or wrinkles would remain stationary in absolute pixel coordinates even when the subject's pose changed. StyleGAN3 \citep{karras2021alias} addressed this fundamental issue by treating feature maps as continuous signals and introducing an alias-free architecture. By strictly applying ideal low-pass filters to eliminate aliasing during upsampling and non-linearities, StyleGAN3 ensures true translation and rotation equivariance. In this work, I specifically utilize the \textbf{StyleGAN3-R} variant, which utilizes radially symmetric filters to provide robust rotational consistency. This property is particularly important for CelebV-HQ \citep{zhu2022celebvhq}, which contains unconstrained video frames exhibiting large pose variations, facial rotations, and subtle motion dynamics.
+
+To stabilize fine-tuning on a relatively limited target dataset, all experiments additionally employ Adaptive Discriminator Augmentation (ADA) \citep{karras2020ada}.
+
+\paragraph{Conditional generative modeling.}
+Conditional GANs extend conventional GAN training by incorporating auxiliary information into both the generator and discriminator. Rather than modeling a single marginal distribution $p(x)$, conditional models learn a family of conditional distributions $p(x|c)$, where $c$ denotes side information such as class labels, semantic attributes, or textual descriptions.
+
+Most prior conditional GAN studies have focused on semantic conditioning signals, including object categories, identities, or language prompts. In contrast, this work investigates image quality as a conditioning variable. Specifically, brightness and sharpness measurements are transformed into discrete quality labels and provided to the model during training.
+
+This distinction is important because low-quality samples are often removed during dataset cleaning. While filtering may improve perceptual quality, it simultaneously removes modes from the underlying data distribution. I instead preserve all samples and expose quality information through conditioning labels. This formulation allows the model to explicitly represent quality-dependent variations while maintaining full coverage of the target distribution.
+
 \section{Method}
+
 \subsection{Base model and fine-tuning}
-All experiments fine-tune the public \texttt{stylegan3-r-ffhqu-256x256}
-checkpoint at $256\times256$ using the official NVIDIA StyleGAN3 code with
-adaptive discriminator augmentation (ADA; \citealp{karras2020ada}). We keep a
-single fixed configuration across every run: \texttt{cfg=stylegan3-r},
-generator channel base $32768$ / discriminator $16384$ (set via
-\texttt{-{}-cbase=16384}; the configuration doubles the generator base
-internally), $\gamma=2$, batch size $32$, one GPU, and random seed $0$. We train
-each run for exactly $1{,}000$ kimg and select, \emph{per run}, the snapshot
-with the lowest local \texttt{fid50k\_full}.
+All experiments are conducted using the official NVIDIA StyleGAN3 implementation. I initialize training from the publicly available \texttt{stylegan3-r-ffhqu-256x256} checkpoint and fine-tune the model on CelebV-HQ frames at a resolution of $256\times256$.
 
-\subsection{Three data-handling regimes}
-The three experiments are identical except for the training data:
-\begin{itemize}
-  \item \textbf{exp1 (full).} All $\sim\!35{,}610$ extracted frames, unconditional.
-  \item \textbf{exp2 (filtered).} Frames below brightness/sharpness thresholds
-        removed, leaving $12{,}403$ frames, unconditional. This operationalises
-        the ``clean the data'' impulse.
-  \item \textbf{exp3 (conditional).} The same full $\sim\!35{,}610$ frames as
-        exp1, but each frame is labelled with a brightness$\times$sharpness
-        bucket and the model is trained conditionally.
-\end{itemize}
-exp1 and exp3 use \emph{the same data}; exp3 only adds labels. exp2 is the
-smaller filtered set. The contrast across the three isolates the effect of the
-data-handling choice.
+To ensure a controlled comparison, every experiment shares an identical training configuration. Specifically, I use the StyleGAN3-R architecture with Adaptive Discriminator Augmentation (ADA) \citep{karras2020ada}, batch size $32$, R1 regularization coefficient $\gamma=2$, generator channel base $32768$, discriminator channel base $16384$, a single GPU, and random seed $0$. Training proceeds for exactly $1000$ kimg in all runs.
 
-\subsection{Quality buckets and conditional generation}
-\label{sec:cond}
-We define quality along two axes computed identically for exp2 and exp3:
-\textbf{brightness} (mean luma) and \textbf{sharpness} (variance of the
-Laplacian, a standard blur measure). Splitting each axis at its median yields
-four joint buckets:
-$\{0\!:\text{dark+blurry},\,1\!:\text{dark+sharp},\,2\!:\text{bright+blurry},\,3\!:\text{bright+sharp}\}$.
-On CelebV-HQ the two axes are strongly correlated: the realised bucket
-proportions are $(0.366, 0.134, 0.134, 0.366)$---dark frames tend to be blurry
-and bright frames tend to be sharp, with the off-diagonal buckets rare.
+The only experimental variable is the strategy used to handle low-quality training samples. No changes are made to the generator architecture, discriminator architecture, optimization procedure, augmentation policy, or training duration. For each experiment, the checkpoint with the lowest locally measured \texttt{fid50k\_full} score is selected for evaluation.
 
-\paragraph{Conditional resume.}
-The FFHQ-U checkpoint is unconditional, so a conditional model contains
-label-embedding layers (the generator's first mapping layer and the
-discriminator's label projection) with no counterpart in the checkpoint. We
-therefore transfer every shape-matching tensor---i.e.\ essentially the entire
-synthesis network and all learned image-quality knowledge---and randomly
-initialise only the label-specific layers, which the model then learns during
-fine-tuning. This is the only modification to the upstream code and is a no-op
-for the unconditional runs.
+\subsection{Quality measurement}
+To quantify image quality in a lightweight and reproducible manner, I implement brightness and sharpness measurements using pure NumPy operations without relying on external computer vision libraries.
 
-\paragraph{Proportional sampling.}
-At generation time, a conditional model requires a label per image. We draw the
-per-image bucket from a fixed-seed sampler according to a proportion vector
-$\mathbf{p}$. Setting $\mathbf{p}$ to the training proportions matches the
-reference distribution; biasing it toward the sharp buckets trades diversity for
-Inception Score. This proportion vector is a controllable knob that the
-unconditional baselines do not have.
+RGB images are first converted to luminance values according to
+\[ Y = 0.299R + 0.587G + 0.114B. \]
+Brightness is defined as the mean luminance value of the image. Higher values indicate brighter frames. Sharpness is measured as the variance of the discrete Laplacian applied to the luminance channel. Images containing stronger edges and finer details produce larger Laplacian variances, whereas blurry images yield smaller values. To avoid boundary artifacts, a one-pixel border is excluded from the computation. These quality measurements are used exclusively for categorization and never modify the underlying image pixels.
+
+\subsection{Data-handling regimes}
+I investigate three alternative strategies for handling quality variation in CelebV-HQ frames.
+
+\paragraph{Exp1: Full baseline.}
+All extracted frames are retained and used for training without modification. The model is trained as a standard unconditional GAN.
+
+\paragraph{Exp2: Filtered baseline.}
+Frames failing predefined quality thresholds are removed before training. Specifically, images with brightness below \texttt{min\_bright=60} or sharpness below \texttt{min\_sharp=100} are discarded. This procedure reduces the dataset from approximately $35,610$ frames to $12,403$ frames. Training remains unconditional. This setting represents the conventional dataset-cleaning strategy, where low-quality samples are treated as undesirable noise.
+
+\paragraph{Exp3: Quality-conditioned training.}
+Instead of removing low-quality samples, all approximately $35,610$ frames are preserved. Each image is assigned a discrete quality label derived from its brightness and sharpness measurements, and the model is trained conditionally. Importantly, Exp1 and Exp3 contain exactly the same image pixels. The only difference is the introduction of quality labels in Exp3.
+
+\subsection{Quality bucket construction}
+For conditional training, brightness and sharpness values are computed for every image in the dataset.
+
+Each quality axis is divided at its empirical median, producing binary indicators for brightness and sharpness. Combining the two indicators yields four quality categories:
+\[ \{0:\text{dark+blurry}, 1:\text{dark+sharp}, 2:\text{bright+blurry}, 3:\text{bright+sharp}\}. \]
+The resulting labels are stored in \texttt{dataset.json} and associated with each image during training. No image preprocessing, enhancement, denoising, or pixel modification is applied. The original image bytes are preserved exactly, and only the integer quality labels are added. Due to the natural correlation between illumination and blur in CelebV-HQ video frames, the resulting bucket frequencies are approximately
+\[ (0.366, 0.134, 0.134, 0.366). \]
+
+\subsection{Conditional fine-tuning}
+The FFHQ-U checkpoint used for initialization is an unconditional model. Consequently, enabling conditional training introduces label-dependent layers that do not exist in the original checkpoint. To support conditional fine-tuning, I modify the checkpoint loading procedure through a lightweight resume patch. During initialization, all parameters whose tensor shapes match between the pretrained and conditional architectures are copied directly from the FFHQ-U checkpoint. This transfers the entire synthesis network together with all previously learned facial representations. Only label-specific layers are excluded from weight transfer and initialized randomly. These layers include the generator label embedding pathway and the discriminator label projection layers required for conditional training.
+
+Training then proceeds using image-label pairs $(x,c)$. The generator receives both latent vectors and quality labels, learning conditional distributions
+\[ p(x|c) \]
+while the discriminator evaluates not only image realism but also consistency between the generated image and its associated quality label. This design enables the model to preserve all modes present in the original data distribution while explicitly modeling quality-dependent variation.
+
+\subsection{Generation-time proportion control}
+Unlike unconditional models, the conditional generator requires a label during inference. For each generated image, a quality class is sampled according to a user-defined probability vector
+\[ \mathbf{p} = (p_0, p_1, p_2, p_3) \]
+Unless otherwise specified, I set
+\[ (0.3664, 0.1336, 0.1336, 0.3664) \]
+which matches the empirical distribution of the training data.
+
+A fixed random seed is used to generate reproducible label assignments. Under this configuration, the 1000 generated samples follow approximately the same quality composition as the reference dataset. Because $\mathbf{p}$ can be modified without retraining the network, the conditional model exposes a post-training control mechanism unavailable to the unconditional baselines. By increasing the probability of sharp-quality buckets, users can bias generation toward visually cleaner images, whereas matching the empirical distribution prioritizes fidelity to the target dataset.
 
 \section{Experimental Setup}
 \paragraph{Data.}
@@ -135,10 +212,10 @@ which motivates the quality study. The filtered set (exp2) retains $12{,}403$ of
 $35{,}610$ frames.
 
 \paragraph{Metrics.}
-We report the four challenge metrics computed against the full $32{,}550$-image
+I report the four challenge metrics computed against the full $32{,}550$-image
 CelebV-HQ reference from $1{,}000$ generated images. Lower is better for FID and
-KID; higher is better for IS and TopP\&R. We additionally track
-\texttt{fid50k\_full} ($50{,}000$ samples) \emph{locally} during training for
+KID; higher is better for IS and TOPPR. I additionally track
+\texttt{fid50k\_full} ($50{,}000$ samples) locally during training for
 snapshot selection only; note that the local and leaderboard FID are not
 directly comparable, largely because FID is biased upward at the small
 ($1{,}000$) sample size used for scoring.
@@ -161,27 +238,20 @@ lowest-local-FID snapshot (exp1: $960$; exp2: $760$; exp3: $1000$ kimg).
 \begin{table}[h]
 \centering
 \caption{Leaderboard metrics ($1{,}000$ generated images vs.\ the
-$32{,}550$-image CelebV-HQ reference). Best per column in \textbf{bold}.
+$32{,}550$-image CelebV-HQ reference). Best per column in bold. Second best per column in underlined. 
 Arrows indicate the favourable direction.}
 \label{tab:main}
 \begin{tabular}{lcccc}
 \toprule
-Experiment & FID $\downarrow$ & IS $\uparrow$ & KID $\downarrow$ & TopP\&R $\uparrow$ \\
+Experiment & FID $\downarrow$ & IS $\uparrow$ & KID $\downarrow$ & TOPPR $\uparrow$ \\
 \midrule
-exp1 -- full (unconditional)        & \textbf{37.06} & 3.81 & 0.0089 & \textbf{0.8989} \\
+exp1 -- full (unconditional)        & \textbf{37.05} & 3.80 & \underline{0.0089} & \textbf{0.8919} \\
 exp2 -- filtered (unconditional)    & 42.99 & \textbf{4.49} & 0.0134 & 0.7718 \\
-exp3 -- conditional (full + labels) & 37.27 & 3.90 & \textbf{0.0082} & 0.8887 \\
+exp3 -- conditional (full + labels) & \underline{37.24} & \underline{3.91} & \textbf{0.0082} & \underline{0.884} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Snapshot selection}
-Locally, the best \texttt{fid50k\_full} values are $7.64$ (exp1, $960$ kimg),
-$10.73$ (exp2, $760$ kimg), and $7.88$ (exp3, $1000$ kimg). The full-data and
-conditional runs reach a comparable local optimum, while the filtered run
-plateaus markedly higher---an early signal of the effect confirmed on the
-leaderboard. The local FID ordering (exp1 $<$ exp3 $<$ exp2) matches the
-leaderboard FID ordering, supporting our snapshot choices.
 
 \subsection{Qualitative comparison}
 Figure~\ref{fig:grid} shows $16$ samples from each model at the same seeds. The
@@ -191,120 +261,75 @@ visibly reduced variation.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\linewidth]{figures/comparison_grid.png}
-\caption{Uncurated samples (16 per model, identical seeds). Left: exp1 (full).
+\includegraphics[width=\linewidth]{comparison_grid.png}
+\caption{Uncurated samples. Left: exp1 (full).
 Middle: exp2 (filtered). Right: exp3 (conditional).}
 \label{fig:grid}
 \end{figure}
 
 \subsection{Analysis}
 \paragraph{Filtering trades distribution match for sharpness.}
-exp2 attains the best IS ($4.49$) but the worst FID, KID, and TopP\&R. The
+exp2 attains the best IS ($4.49$) but the worst FID, KID, and TOPPR. The
 mechanism is that the evaluation compares against the \emph{full, messy}
 CelebV-HQ distribution. Three of the four metrics reward matching that
 distribution, including its dark and blurry modes; only IS is reference-free and
 rewards per-image confidence/diversity regardless of the target. Removing
 low-quality frames makes the generator unable to reproduce those modes, so the
 generated distribution drifts away from the reference (higher FID/KID) and loses
-coverage (TopP\&R drops from $0.90$ to $0.77$). The IS gain is real but is the
+coverage (TOPPR drops from $0.89$ to $0.77$). The IS gain is real but is the
 only metric that benefits, and it is outweighed three-to-one.
 
 \paragraph{Conditioning uses the quality signal without discarding modes.}
 exp3 keeps every frame and instead conditions on quality. It matches the
-full-data baseline on the distribution-matching metrics (FID $37.27$ vs.\
-$37.06$; TopP\&R $0.8887$ vs.\ $0.8989$---both far above the filtered run) while
-\emph{improving} KID ($0.0082$, best overall) and IS ($3.90$ vs.\ $3.81$) over
+full-data baseline on the distribution-matching metrics (FID $37.24$ vs.\
+$37.05$; TOPPR $0.884$ vs.\ $0.8919$---both far above the filtered run) while
+\emph{improving} KID ($0.0082$, best overall) and IS ($3.91$ vs.\ $3.80$) over
 exp1. In other words, conditioning recovers part of the per-image quality that
 filtering chased, but without the catastrophic distribution and coverage losses,
-because the full set of modes is retained and merely organised by label. This
-supports the central claim: the quality of frames is information to
-\emph{condition on}, not to \emph{filter by}.
+because the full set of modes is retained and merely organised by label.
 
 \section{Discussion}
-\paragraph{The proportion knob.}
+\paragraph{The proportion control variable.}
 Because exp3 is conditional, the generation proportions $\mathbf{p}$ are a free,
-post-hoc control. We report $\mathbf{p}$ set to the training proportions, which
+post-hoc control. I report $\mathbf{p}$ set to the training proportions, which
 matches the reference. Biasing $\mathbf{p}$ toward the sharp buckets is expected
-to raise IS at some cost to coverage; given the comfortable TopP\&R margin, this
+to raise IS at some cost to coverage; given the comfortable TOPPR margin, this
 is a promising direction for squeezing additional rank without retraining. The
 unconditional baselines offer no comparable control beyond truncation.
 
 \paragraph{Local vs.\ leaderboard FID.}
-Our local \texttt{fid50k\_full} ($\approx 7.6$ at best) is far below the
+My local \texttt{fid50k\_full} ($\approx 7.6$ at best) is far below the
 leaderboard FID ($\approx 37$). This gap is expected and largely structural: the
 leaderboard scores only $1{,}000$ images, and FID is biased upward at small
 sample sizes, whereas the local metric uses $50{,}000$. The two should therefore
-be used for relative, not absolute, comparison; we rely on local FID only for
+be used for relative, not absolute, comparison; I rely on local FID only for
 within-run snapshot selection, where the bias is shared.
 
 \paragraph{Limitations.}
 Local FID need not perfectly predict leaderboard rank, so the selected snapshots
-may be slightly suboptimal on the $1{,}000$-image metric. We use a coarse
+may be slightly suboptimal on the $1{,}000$-image metric. I use a coarse
 $2\times2$ quality bucketing; a finer grid or continuous conditioning could
 sharpen the effect but risks under-populating rare buckets. Bit-exact
 reproduction is not guaranteed across hardware due to floating-point
-non-determinism; we mitigate this by releasing the exact weights
+non-determinism; I mitigate this by releasing the exact weights
 (Section~\ref{sec:repro}).
 
 \section{Conclusion}
-Across a controlled comparison that varies only the handling of frame quality,
-filtering low-quality frames improves a single reference-free metric while
-harming every distribution-matching metric, whereas conditioning on quality
-preserves the full distribution and improves KID and IS over the plain baseline,
-with a controllable generation-time knob. For matching a messy target
-distribution, the right move is to condition on quality rather than filter by it.
+I presented a controlled study of three strategies for handling quality variation during StyleGAN3 fine-tuning on CelebV-HQ. While filtering low-quality samples improves the reference-free Inception Score, it simultaneously removes valid modes from the target distribution and degrades all distribution-matching metrics. In contrast, quality-conditioned training preserves the full dataset while explicitly modeling quality variation through conditional labels.
 
-\section*{Reproducibility Statement}
+Experimental results demonstrate that conditioning achieves nearly identical FID and TOPPR performance to the full-data baseline while improving KID and IS. Furthermore, the conditional formulation introduces a generation-time control mechanism that enables post-hoc adjustment of quality distributions without retraining.
+
+More broadly, my findings suggest that apparent low-quality samples should not automatically be treated as noise. When the objective is faithful distribution matching, such samples often correspond to legitimate modes of the target distribution. Modeling these modes through conditioning provides a competitive alternative than removing them through dataset filtering.
+
+\section*{Reproducibility}
 \label{sec:repro}
-The complete pipeline is released at a public repository and is built for exact
-reproduction. Training uses random seed $0$; image generation uses the fixed
-seed range $0$--$999$ at truncation $\psi=1.0$; the conditional model additionally
-fixes the per-image bucket-sampling seed and uses proportions
-$(0.366, 0.134, 0.134, 0.366)$. The conda environment is pinned in
-\texttt{environment.yml}, the upstream StyleGAN3 code is used with a single
-documented patch (conditional resume), and the trained snapshot weights used for
-each leaderboard submission are released so that the exact $1{,}000$ images can
-be regenerated from the submitted code and weights. The exact per-experiment
-generation commands are documented in the repository \texttt{README}.
+The complete pipeline is released at a public repository 
 
-\bibliographystyle{iclr2024_conference}
-\begin{thebibliography}{}
+\url{https://github.com/heeyoon-DAlab/DeepGenerativeModel_FaceGenerationChallenge}. 
 
-\bibitem[Bi\'nkowski et al.(2018)]{binkowski2018kid}
-Miko\l{}aj Bi\'nkowski, Dougal J. Sutherland, Michael Arbel, and Arthur Gretton.
-\newblock Demystifying MMD GANs.
-\newblock In \emph{International Conference on Learning Representations (ICLR)}, 2018.
+The exact per-experiment generation commands are documented in the repository \texttt{README}.
 
-\bibitem[Heusel et al.(2017)]{heusel2017fid}
-Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp Hochreiter.
-\newblock GANs trained by a two time-scale update rule converge to a local Nash equilibrium.
-\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2017.
-
-\bibitem[Karras et al.(2020)]{karras2020ada}
-Tero Karras, Miika Aittala, Janne Hellsten, Samuli Laine, Jaakko Lehtinen, and Timo Aila.
-\newblock Training generative adversarial networks with limited data.
-\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2020.
-
-\bibitem[Karras et al.(2021)]{karras2021alias}
-Tero Karras, Miika Aittala, Samuli Laine, Erik H\"ark\"onen, Janne Hellsten, Jaakko Lehtinen, and Timo Aila.
-\newblock Alias-free generative adversarial networks (StyleGAN3).
-\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2021.
-
-\bibitem[Kim et al.(2023)]{kim2023toppr}
-Pum Jun Kim, Yoojin Jang, Jisu Kim, and Jaejun Yoo.
-\newblock {TopP\&R}: Robust support estimation approach for evaluating fidelity and diversity in generative models.
-\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2023.
-
-\bibitem[Salimans et al.(2016)]{salimans2016is}
-Tim Salimans, Ian Goodfellow, Wojciech Zaremba, Vicki Cheung, Alec Radford, and Xi Chen.
-\newblock Improved techniques for training GANs.
-\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2016.
-
-\bibitem[Zhu et al.(2022)]{zhu2022celebvhq}
-Hao Zhu, Wayne Wu, Wentao Zhu, Liming Jiang, Siwei Tang, Li Zhang, Ziwei Liu, and Chen Change Loy.
-\newblock {CelebV-HQ}: A large-scale video facial attributes dataset.
-\newblock In \emph{European Conference on Computer Vision (ECCV)}, 2022.
-
-\end{thebibliography}
+\bibliographystyle{plainnat}
+\bibliography{references}
 
 \end{document}
