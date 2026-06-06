@@ -120,8 +120,6 @@ dependencies:
     - shellingham==1.5.4
     - six==1.17.0
     - tifffile==2024.8.30
-    - torch==1.12.1+cu113
-    - torchvision==0.13.1+cu113
     - tqdm==4.62.2
     - typer==0.23.2
     - typing-extensions==4.15.0
