@@ -18,7 +18,6 @@ conda activate stylegan3
 # Create directory for model weights
 mkdir -p models
 
-```text
 DeepGenerativeModel_FaceGenerationChallenge/
 ├── models/
 │   ├── exp1_network-snapshot-000960.pkl
@@ -27,7 +26,7 @@ DeepGenerativeModel_FaceGenerationChallenge/
 ├── src/
 ├── stylegan3/
 └── ...
-```
+
 ```
 ---
 
